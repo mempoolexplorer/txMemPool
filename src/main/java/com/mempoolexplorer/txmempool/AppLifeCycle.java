@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
+//Where things happen.
 @Component
 @Profile(value = { AppProfiles.DEV, AppProfiles.PROD })
 @Slf4j
