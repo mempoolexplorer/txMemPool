@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: txMemPool
+#  cloud:
+#    config:
+#      enabled: true
+#      uri:
+#      - http://172.18.0.4:8888
+#      fail-fast: true
+      
