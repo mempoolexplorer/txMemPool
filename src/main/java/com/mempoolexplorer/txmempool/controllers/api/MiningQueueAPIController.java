@@ -27,6 +27,8 @@ import com.mempoolexplorer.txmempool.entites.AlgorithmType;
 import com.mempoolexplorer.txmempool.entites.IgnoredTransaction;
 import com.mempoolexplorer.txmempool.entites.miningqueue.LiveMiningQueue;
 import com.mempoolexplorer.txmempool.entites.miningqueue.MiningQueue;
+import com.mempoolexplorer.txmempool.entites.miningqueue.TxGraph;
+import com.mempoolexplorer.txmempool.entites.miningqueue.TxGraphList;
 import com.mempoolexplorer.txmempool.entites.miningqueue.TxToBeMined;
 import com.mempoolexplorer.txmempool.repositories.reactive.IgTransactionReactiveRepository;
 
@@ -40,6 +42,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import reactor.core.publisher.Flux;
 
 /**
  * @author dev7ba
@@ -121,6 +125,14 @@ public class MiningQueueAPIController {
 		if (txIFLDG == null)
 			throw new ServiceNotReadyYetException("txIFLDG is null. No txs on MiningQueue");
 		return getTxById(txIFLDG.getTxId());
+	}
+
+	@GetMapping("/txGraphList")
+	public Flux<TxGraph> getTxGraphList() throws ServiceNotReadyYetException {
+		TxGraphList txGraphList = obtainLiveMiningQueue().getMiningQueue().getTxGraphList();
+		if (txGraphList == null)
+			throw new ServiceNotReadyYetException("txGraphList is null. No txs on MiningQueue");
+		return Flux.fromIterable(txGraphList.getTxGraphList());
 	}
 
 	@GetMapping("/tx/{txId}")

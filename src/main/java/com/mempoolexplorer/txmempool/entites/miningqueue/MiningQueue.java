@@ -10,11 +10,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mempoolexplorer.txmempool.bitcoindadapter.entites.Transaction;
+import com.mempoolexplorer.txmempool.bitcoindadapter.entites.TxAncestry;
+import com.mempoolexplorer.txmempool.components.TxMemPool;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.mempoolexplorer.txmempool.bitcoindadapter.entites.Transaction;
-import com.mempoolexplorer.txmempool.components.TxMemPool;
 
 /**
  * MiningQueue is a one-shot class. Is expected to be created one time and
@@ -53,7 +54,10 @@ public class MiningQueue {
 	private ModifiedMempool modifiedMempool = new ModifiedMempool();
 
 	private TxMemPool txMemPool;
+
 	private Transaction txIFLDG = null;// tx in first longest dependency graph;
+
+	private TxGraphList txGraphList = new TxGraphList();
 
 	private MiningQueue() {
 	}
@@ -71,8 +75,10 @@ public class MiningQueue {
 		txMemPool.getDescendingTxStream().limit(maxTransactionsNumber).forEach(tx -> {
 			mq.addTx(tx);
 			mq.checkFLDG(tx);// Checks first tx found in first longest dependency graph
+			mq.addToTxGraph(tx);
 			checkIsDescending(tx, mq);
 		});
+		mq.getTxGraphList().sort();
 		calculatePrecedingTxsCount(mq);
 		logger.info("New MiningQueue created.");
 		return mq;
@@ -104,6 +110,13 @@ public class MiningQueue {
 		}
 	}
 
+	private void addToTxGraph(Transaction tx) {
+		TxAncestry ancestry = tx.getTxAncestry();
+		if ((ancestry.getAncestorCount() + ancestry.getDescendantCount()) == 2)
+			return;
+		txGraphList.add(tx);
+	}
+
 	private static void calculatePrecedingTxsCount(MiningQueue mq) {
 		int txCount = 0;
 		for (CandidateBlock block : mq.blockList) {
@@ -131,6 +144,10 @@ public class MiningQueue {
 	// Checks first tx found in first longest dependency graph
 	public Transaction getTxIFLDG() {
 		return txIFLDG;
+	}
+
+	public TxGraphList getTxGraphList() {
+		return txGraphList;
 	}
 
 	public Optional<CandidateBlock> getCandidateBlock(int index) {
