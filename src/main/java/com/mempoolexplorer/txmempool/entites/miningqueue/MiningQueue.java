@@ -116,9 +116,6 @@ public class MiningQueue {
 	}
 
 	private void calculateFancyTx() {
-		if ((txGraphList.getTxsGraphList().isEmpty()) && (txIFLDG != null)) {
-			fancyTxId = txIFLDG.getTxId();
-		}
 		Iterator<TxGraph> it = txGraphList.getTxsGraphList().iterator();
 		while (it.hasNext()) {
 			TxGraph graph = it.next();
@@ -126,6 +123,9 @@ public class MiningQueue {
 				fancyTxId = graph.getTxSet().iterator().next();
 				break;
 			}
+		}
+		if ((fancyTxId == null) && (txIFLDG != null)) {
+			fancyTxId = txIFLDG.getTxId();
 		}
 	}
 
