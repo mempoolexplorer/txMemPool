@@ -61,8 +61,8 @@ public class LiveMiningQueueContainerImpl implements LiveMiningQueueContainer {
 	}
 
 	@Override
-	public void setAllowRefresh(boolean allowRefresh){
-		this.allowRefresh=allowRefresh;
+	public void setAllowRefresh(boolean allowRefresh) {
+		this.allowRefresh = allowRefresh;
 		this.refresh.set(allowRefresh);
 	}
 
@@ -71,7 +71,7 @@ public class LiveMiningQueueContainerImpl implements LiveMiningQueueContainer {
 		return liveMiningQueueRef.get();
 	}
 
-	//Called when new Tx
+	// Called when new Tx
 	@Override
 	public void refreshIfNeeded() {
 		if (refresh.getAndSet(false)) {
@@ -79,7 +79,7 @@ public class LiveMiningQueueContainerImpl implements LiveMiningQueueContainer {
 		}
 	}
 
-	//Called when new Block
+	// Called when new Block
 	@Override
 	public void forceRefresh() {
 		if (allowRefresh) {
@@ -98,7 +98,8 @@ public class LiveMiningQueueContainerImpl implements LiveMiningQueueContainer {
 	private MiningQueue updateLiveMiningQueue() {
 		log.debug("Updating live mining queue.");
 		MiningQueue newMiningQueue = MiningQueue.buildFrom(new ArrayList<>(), txMemPool,
-				txMempoolProperties.getMiningQueueNumTxs(), txMempoolProperties.getMiningQueueMaxNumBlocks());
+				txMempoolProperties.getLiveMiningQueueMaxTxs(), txMempoolProperties.getMiningQueueMaxNumBlocks(),
+				txMempoolProperties.getMaxTxsToCalculateTxsGraphs());
 		log.debug("Live mining queue updated.");
 
 		if (newMiningQueue.isHadErrors()) {

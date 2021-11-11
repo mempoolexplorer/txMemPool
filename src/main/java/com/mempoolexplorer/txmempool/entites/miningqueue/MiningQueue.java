@@ -57,13 +57,15 @@ public class MiningQueue {
 
 	private Transaction txIFLDG = null;// tx in first longest dependency graph;
 
+	private String fancyTxId = null;// usually a transaction with a graph not too big.
+
 	private TxGraphList txGraphList = new TxGraphList();
 
 	private MiningQueue() {
 	}
 
 	public static MiningQueue buildFrom(List<Integer> coinBaseTxWeightList, TxMemPool txMemPool,
-			Integer maxTransactionsNumber, Integer maxNumBlocks) {
+			Integer maxTransactionsNumber, Integer maxNumBlocks, Integer maxTxsToCalculateTxsGraphs) {
 		logger.info("Creating new MiningQueue...");
 		MiningQueue mq = new MiningQueue();
 		mq.txMemPool = txMemPool;
@@ -71,14 +73,17 @@ public class MiningQueue {
 		for (int index = 0; index < coinBaseTxWeightList.size(); index++) {
 			mq.blockList.add(new CandidateBlock(index, coinBaseTxWeightList.get(index)));
 		}
-
+		int mempoolsize = txMemPool.getTxNumber();
 		txMemPool.getDescendingTxStream().limit(maxTransactionsNumber).forEach(tx -> {
 			mq.addTx(tx);
 			mq.checkFLDG(tx);// Checks first tx found in first longest dependency graph
-			mq.addToTxGraph(tx);
+			if ((mempoolsize < maxTxsToCalculateTxsGraphs) && (maxNumBlocks != 1)) {
+				mq.addToTxGraph(tx);
+			}
 			checkIsDescending(tx, mq);
 		});
 		mq.getTxGraphList().sort();
+		mq.calculateFancyTx();
 		calculatePrecedingTxsCount(mq);
 		logger.info("New MiningQueue created.");
 		return mq;
@@ -107,6 +112,20 @@ public class MiningQueue {
 		int txDepth = tx.getTxAncestry().getAncestorCount() + tx.getTxAncestry().getDescendantCount();
 		if (txDepth > currentDepth) {
 			txIFLDG = tx;
+		}
+	}
+
+	private void calculateFancyTx() {
+		if ((txGraphList.getTxsGraphList().isEmpty()) && (txIFLDG != null)) {
+			fancyTxId = txIFLDG.getTxId();
+		}
+		Iterator<TxGraph> it = txGraphList.getTxsGraphList().iterator();
+		while (it.hasNext()) {
+			TxGraph graph = it.next();
+			if (graph.isNonLinear() && graph.getTxSet().size() < 20) {
+				fancyTxId = graph.getTxSet().iterator().next();
+				break;
+			}
 		}
 	}
 
@@ -144,6 +163,11 @@ public class MiningQueue {
 	// Checks first tx found in first longest dependency graph
 	public Transaction getTxIFLDG() {
 		return txIFLDG;
+	}
+
+	// Normally a tx within a graph not too big.
+	public String getFancyTxId() {
+		return fancyTxId;
 	}
 
 	public TxGraphList getTxGraphList() {

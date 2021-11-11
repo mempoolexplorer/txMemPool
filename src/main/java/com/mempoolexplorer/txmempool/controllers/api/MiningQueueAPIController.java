@@ -119,12 +119,12 @@ public class MiningQueueAPIController {
 	}
 
 	// Returns first tx found in first longest dependency graph
-	@GetMapping("/txIFLDG")
-	public PrunedLiveMiningQueueGraphData getTxIFLDG() throws ServiceNotReadyYetException {
-		Transaction txIFLDG = obtainLiveMiningQueue().getMiningQueue().getTxIFLDG();
-		if (txIFLDG == null)
-			throw new ServiceNotReadyYetException("txIFLDG is null. No txs on MiningQueue");
-		return getTxById(txIFLDG.getTxId());
+	@GetMapping("/txFancy")
+	public PrunedLiveMiningQueueGraphData getTxFancy() throws ServiceNotReadyYetException {
+		String fancyTxId = obtainLiveMiningQueue().getMiningQueue().getFancyTxId();
+		if (fancyTxId == null)
+			throw new ServiceNotReadyYetException("txFancyFancy is null. No txs on MiningQueue");
+		return getTxById(fancyTxId);
 	}
 
 	@GetMapping("/txGraphList")
@@ -132,7 +132,7 @@ public class MiningQueueAPIController {
 		TxGraphList txGraphList = obtainLiveMiningQueue().getMiningQueue().getTxGraphList();
 		if (txGraphList == null)
 			throw new ServiceNotReadyYetException("txGraphList is null. No txs on MiningQueue");
-		return Flux.fromIterable(txGraphList.getTxGraphList());
+		return Flux.fromIterable(txGraphList.getTxsGraphList());
 	}
 
 	@GetMapping("/tx/{txId}")

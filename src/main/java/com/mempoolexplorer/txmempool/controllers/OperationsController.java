@@ -118,7 +118,7 @@ public class OperationsController {
 
 	private MiningQueue buildMiningQueue(Block block) {
 		MiningQueue miningQueue = MiningQueue.buildFrom(List.of(block.getCoinBaseTx().getWeight()), txMemPool,
-				properties.getMiningQueueNumTxs(), 1);
+				properties.getLiveMiningQueueMaxTxs(), 1, properties.getMaxTxsToCalculateTxsGraphs());
 		if (miningQueue.isHadErrors()) {
 			log.error("Mining Queue had errors when trying to build it");
 		}

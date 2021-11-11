@@ -379,7 +379,7 @@ public class MempoolEventConsumer implements Runnable {
 
     private MiningQueue buildMiningQueue(Block block) {
         MiningQueue miningQueue = MiningQueue.buildFrom(List.of(block.getCoinBaseTx().getWeight()), txMemPool,
-                txMempoolProperties.getMiningQueueNumTxs(), 1);
+                txMempoolProperties.getLiveMiningQueueMaxTxs(), 1, txMempoolProperties.getMaxTxsToCalculateTxsGraphs());
         if (miningQueue.isHadErrors()) {
             alarmLogger.addAlarm("Mining Queue had errors, in OnNewBlock");
         }
