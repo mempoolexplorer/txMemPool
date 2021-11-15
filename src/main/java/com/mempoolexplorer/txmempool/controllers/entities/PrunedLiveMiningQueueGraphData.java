@@ -40,5 +40,5 @@ public class PrunedLiveMiningQueueGraphData {
 
 	private TxIgnoredData txIgnoredData;
 
-	private Transaction tx;
+	private InvariantTxParts tx;
 }

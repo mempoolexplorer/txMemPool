@@ -13,6 +13,7 @@ import com.mempoolexplorer.txmempool.components.containers.LiveMiningQueueContai
 import com.mempoolexplorer.txmempool.controllers.entities.CandidateBlockHistogram;
 import com.mempoolexplorer.txmempool.controllers.entities.CompleteLiveMiningQueueGraphData;
 import com.mempoolexplorer.txmempool.controllers.entities.DirectedEdge;
+import com.mempoolexplorer.txmempool.controllers.entities.InvariantTxParts;
 import com.mempoolexplorer.txmempool.controllers.entities.PrunedLiveMiningQueueGraphData;
 import com.mempoolexplorer.txmempool.controllers.entities.PrunedSatVByteHistogramElement;
 import com.mempoolexplorer.txmempool.controllers.entities.PrunedTx;
@@ -114,7 +115,7 @@ public class MiningQueueAPIController {
 		LiveMiningQueue liveMiningQueue = obtainLiveMiningQueue();
 
 		CompleteLiveMiningQueueGraphData complete = liveMiningQueue.getLiveMiningQueueGraphData();
-		return getTxByIndex(blockIndex, satVByte, txIndex, liveMiningQueue, complete);
+		return getTxByIndex(blockIndex, satVByte, txIndex, liveMiningQueue, complete, true);
 
 	}
 
@@ -135,8 +136,19 @@ public class MiningQueueAPIController {
 		return Flux.fromIterable(txGraphList.getTxsGraphList());
 	}
 
+	@GetMapping("/txCached/{txId}")
+	public PrunedLiveMiningQueueGraphData getCachedTxById(@PathVariable("txId") String txId)
+			throws ServiceNotReadyYetException {
+		return getTxBy(txId, false);
+	}
+
 	@GetMapping("/tx/{txId}")
 	public PrunedLiveMiningQueueGraphData getTxById(@PathVariable("txId") String txId)
+			throws ServiceNotReadyYetException {
+		return getTxBy(txId, true);
+	}
+
+	private PrunedLiveMiningQueueGraphData getTxBy(String txId, boolean fillTxField)
 			throws ServiceNotReadyYetException {
 
 		LiveMiningQueue liveMiningQueue = obtainLiveMiningQueue();
@@ -156,8 +168,7 @@ public class MiningQueueAPIController {
 		int txIndex = complete.getCandidateBlockHistogramList().get(blockIndex).getHistogramMap().get(satVByte)
 				.getTxIdToListIndex().get(txId);
 
-		return getTxByIndex(blockIndex, satVByte, txIndex, liveMiningQueue, complete);
-
+		return getTxByIndex(blockIndex, satVByte, txIndex, liveMiningQueue, complete, fillTxField);
 	}
 
 	private LiveMiningQueue obtainLiveMiningQueue() throws ServiceNotReadyYetException {
@@ -170,13 +181,13 @@ public class MiningQueueAPIController {
 	}
 
 	private PrunedLiveMiningQueueGraphData getTxByIndex(Integer blockIndex, Integer satVByte, int txIndex,
-			LiveMiningQueue liveMiningQueue, CompleteLiveMiningQueueGraphData complete) {
+			LiveMiningQueue liveMiningQueue, CompleteLiveMiningQueueGraphData complete, boolean fillTxField) {
 		PrunedLiveMiningQueueGraphData pruned = new PrunedLiveMiningQueueGraphData();
 		addCommonData(complete, pruned);
 		addMiningQueueDataToPruned(pruned, complete);
 		addBlockDataToPruned(blockIndex, complete, pruned);
 		addHistogramDataToPruned(blockIndex, satVByte, complete, pruned);
-		addTxByIndexToPruned(blockIndex, satVByte, txIndex, liveMiningQueue, pruned);
+		addTxByIndexToPruned(blockIndex, satVByte, txIndex, liveMiningQueue, pruned, fillTxField);
 		return pruned;
 	}
 
@@ -220,7 +231,7 @@ public class MiningQueueAPIController {
 	}
 
 	private void addTxByIndexToPruned(Integer blockIndex, Integer satVByte, int txIndex,
-			LiveMiningQueue liveMiningQueue, PrunedLiveMiningQueueGraphData pruned) {
+			LiveMiningQueue liveMiningQueue, PrunedLiveMiningQueueGraphData pruned, boolean fillTxField) {
 		CompleteLiveMiningQueueGraphData complete = liveMiningQueue.getLiveMiningQueueGraphData();
 		if (blockIndex >= 0 && complete.getCandidateBlockHistogramList().size() > blockIndex) {
 			CandidateBlockHistogram candidateBlockHistogram = complete.getCandidateBlockHistogramList().get(blockIndex);
@@ -233,17 +244,19 @@ public class MiningQueueAPIController {
 					pruned.setTxIndexSelected(txIndex);
 					pruned.setTxDependenciesInfo(buildDependenciesInfo(txId, liveMiningQueue.getMiningQueue()));
 					pruned.setTxIgnoredData(buildTxIgnoredData(txId));
-					pruned.setTx(buildTx(txId, liveMiningQueue.getMiningQueue()));
+					if (fillTxField) {
+						pruned.setTx(buildTx(txId, liveMiningQueue.getMiningQueue()));
+					}
 				}
 			}
 		}
 	}
 
-	private Transaction buildTx(String txId, MiningQueue miningQueue) {
+	private InvariantTxParts buildTx(String txId, MiningQueue miningQueue) {
 		Optional<TxToBeMined> txToBeMined = miningQueue.getTxToBeMined(txId);
 		if (txToBeMined.isEmpty())
 			return null;
-		return txToBeMined.get().getTx();
+		return new InvariantTxParts(txToBeMined.get().getTx());
 	}
 
 	private TxIgnoredData buildTxIgnoredData(String txId) {
