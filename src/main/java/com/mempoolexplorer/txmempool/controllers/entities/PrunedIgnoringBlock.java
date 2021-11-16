@@ -15,6 +15,6 @@ public class PrunedIgnoringBlock {
 	private int txsInMinedBlock;
 	private int txsInCandidateBlock;
 	private int posInCandidateBlock;
-	private long time;
+	private long time;//Epoch milli
 	CoinBaseData coinBaseData;
 }

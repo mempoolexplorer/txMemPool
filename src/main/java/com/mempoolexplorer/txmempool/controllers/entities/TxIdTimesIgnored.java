@@ -14,4 +14,6 @@ public class TxIdTimesIgnored {
     private String txId;
     @JsonProperty("n")
     private Integer nIgnored;
+    @JsonProperty("s")
+    private long deltaSec;
 }

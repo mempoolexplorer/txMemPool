@@ -8,6 +8,7 @@ import com.mempoolexplorer.txmempool.bitcoindadapter.entites.mempool.TxPoolChang
 import com.mempoolexplorer.txmempool.components.MinerNameResolver;
 import com.mempoolexplorer.txmempool.components.MisMinedTransactionsChecker;
 import com.mempoolexplorer.txmempool.components.TxMemPool;
+import com.mempoolexplorer.txmempool.components.containers.IgTxCacheContainer;
 import com.mempoolexplorer.txmempool.components.containers.MinerNamesUnresolvedContainer;
 import com.mempoolexplorer.txmempool.controllers.entities.RecalculateAllStatsResult;
 import com.mempoolexplorer.txmempool.entites.CoinBaseData;
@@ -52,6 +53,8 @@ public class OperationsController {
 	private MinerNamesUnresolvedContainer minerNamesUnresolvedContainer;
 	@Autowired
 	private IgnoredEntitiesService ignoredEntitiesService;
+	@Autowired
+	private IgTxCacheContainer igTxCacheContainer;
 
 	private final String ERR_NO_DETACHED = "txMempool is not in detached state. Change txMempool properties.";
 
@@ -63,6 +66,7 @@ public class OperationsController {
 	@GetMapping("/cleanIgTxNotInMempool")
 	public void cleanIgTxNotInMempool() {
 		ignoredEntitiesService.cleanIgTxNotInMempool(txMemPool);
+		igTxCacheContainer.calculate();
 	}
 
 	@GetMapping("/recalculateAllStats")

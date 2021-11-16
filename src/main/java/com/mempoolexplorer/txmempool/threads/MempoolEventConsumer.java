@@ -14,6 +14,7 @@ import com.mempoolexplorer.txmempool.components.Tx10minBuffer;
 import com.mempoolexplorer.txmempool.components.TxMemPool;
 import com.mempoolexplorer.txmempool.components.alarms.AlarmLogger;
 import com.mempoolexplorer.txmempool.components.containers.AlgorithmDiffContainer;
+import com.mempoolexplorer.txmempool.components.containers.IgTxCacheContainer;
 import com.mempoolexplorer.txmempool.components.containers.LiveMiningQueueContainer;
 import com.mempoolexplorer.txmempool.components.containers.MempoolEventQueueContainer;
 import com.mempoolexplorer.txmempool.components.containers.MinerNamesUnresolvedContainer;
@@ -83,6 +84,8 @@ public class MempoolEventConsumer implements Runnable {
     private MempoolSyncedHealthIndicator mempoolSyncedHealthIndicator;
     @Autowired
     private Tx10minBuffer tx10minBuffer;
+    @Autowired
+    private IgTxCacheContainer igTxCacheContainer;
 
     public void start() {
         if (threadFinished)
@@ -138,6 +141,7 @@ public class MempoolEventConsumer implements Runnable {
             log.info("Syncronization with upstream achived... Cleaning ignored Txs that are not in mempool...");
             ignoredEntitiesService.cleanIgTxNotInMempool(txMemPool);
             log.info("Clean complete");
+            igTxCacheContainer.calculate();
         }
     }
 
@@ -280,6 +284,7 @@ public class MempoolEventConsumer implements Runnable {
             ignoredEntitiesService.onNewBlockConnected(igBlockOurs, minedBlockTxIds,
                     mmtCandidateBlock.getIgnoredONRByMinerMapWD().getFeeableMap().values());
             statisticsService.saveStatisticsToDB(igBlockTemplate, igBlockOurs);
+            igTxCacheContainer.calculate();
         }
 
         // If a connectedBlock event arrives with seqNumber==0 then is probably sent
