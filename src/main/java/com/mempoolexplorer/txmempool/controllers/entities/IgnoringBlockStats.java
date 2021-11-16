@@ -25,6 +25,8 @@ public class IgnoringBlockStats {
     private long lostRewardExcludingNotInMempoolTx;
     @JsonProperty("nInMP")
     private int numTxInMempoolWhenMined;
+    @JsonProperty("cb")
+    private String coinbaseFieldAscii;
 
     public IgnoringBlockStats(IgnoringBlock igBlock) {
         this.setHeight(igBlock.getMinedBlockData().getHeight());
@@ -35,5 +37,6 @@ public class IgnoringBlockStats {
         this.setTime(igBlock.getMinedBlockData().getMinedTime().toEpochMilli());
         this.setTxsInCandidateBlock(igBlock.getCandidateBlockData().getNumTxs());
         this.setTxsInMinedBlock(igBlock.getMinedBlockData().getFeeableData().getNumTxs().orElse(-1));
+        this.setCoinbaseFieldAscii(igBlock.getMinedBlockData().getCoinBaseData().getAscciOfField());
     }
 }
