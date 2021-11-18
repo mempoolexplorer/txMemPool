@@ -23,11 +23,17 @@ public class IgTxCacheContainerImpl implements IgTxCacheContainer {
     @Autowired
     private TxMemPool txMemPool;
 
-    private List<TxIdTimesIgnored> igTxList = new ArrayList<>();
+    private List<TxIdTimesIgnored> igTxListOurs = new ArrayList<>();// Our ideal algorithm
+    private List<TxIdTimesIgnored> igTxListBT = new ArrayList<>();// Bitcoind block template
 
     @Override
     public void calculate() {
-        igTxList = igTxReactiveRepository.findAll().filter(igTx -> igTx.getAType() == AlgorithmType.OURS)
+        igTxListBT = calculate(AlgorithmType.BITCOIND);
+        igTxListOurs = calculate(AlgorithmType.OURS);
+    }
+
+    private List<TxIdTimesIgnored> calculate(AlgorithmType aType) {
+        return igTxReactiveRepository.findAll().filter(igTx -> igTx.getAType() == aType)
                 .map(igTx -> new TxIdTimesIgnored(igTx.getTxId(), Integer.valueOf(igTx.getIgnoringBlocks().size()),
                         getBiggestDeltaSec(igTx.getTxId(), igTx.getIgnoringBlocks())))
                 .sort(Comparator.comparingInt(TxIdTimesIgnored::getNIgnored)
@@ -37,8 +43,11 @@ public class IgTxCacheContainerImpl implements IgTxCacheContainer {
     }
 
     @Override
-    public List<TxIdTimesIgnored> getIgTxList() {
-        return igTxList;
+    public List<TxIdTimesIgnored> getIgTxList(AlgorithmType aType) {
+        if (aType == AlgorithmType.OURS)
+            return igTxListOurs;
+        else
+            return igTxListBT;
     }
 
     private long getBiggestDeltaSec(String txId, List<PrunedIgnoringBlock> pibList) {

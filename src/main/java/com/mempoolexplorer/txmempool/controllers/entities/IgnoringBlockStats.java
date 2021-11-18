@@ -36,7 +36,7 @@ public class IgnoringBlockStats {
         this.setNumTxInMempoolWhenMined(igBlock.getTxMempoolStats().getNumTxs());
         this.setTime(igBlock.getMinedBlockData().getMinedTime().toEpochMilli());
         this.setTxsInCandidateBlock(igBlock.getCandidateBlockData().getNumTxs());
-        this.setTxsInMinedBlock(igBlock.getMinedBlockData().getFeeableData().getNumTxs().orElse(-1));
+        this.setTxsInMinedBlock(igBlock.getMinedBlockData().getFeeableData().getNumTxs().orElse(0));
         this.setCoinbaseFieldAscii(igBlock.getMinedBlockData().getCoinBaseData().getAscciOfField());
     }
 }

@@ -25,12 +25,14 @@ public class IgnoringBlocksAPIController {
     @Autowired
     private IgBlockReactiveRepository igBlockReactiveRepository;
 
+    // TODO: delete
     @GetMapping("/ignoringBlock/{height}")
     public Mono<IgnoringBlockStatsEx> getIgnoringBlockStatsEx(@PathVariable("height") Integer height) {
         return igBlockReactiveRepository.findById(IgnoringBlock.builDBKey(height, AlgorithmType.OURS))
                 .map(IgnoringBlockStatsEx::new);
     }
 
+    // TODO: delete
     @GetMapping("/ignoringBlocks/{page}/{size}")
     public Flux<IgnoringBlockStats> getIgnoringBlocksby(@PathVariable("page") Integer page,
             @PathVariable("size") Integer size) {
@@ -39,4 +41,17 @@ public class IgnoringBlocksAPIController {
                 .map(IgnoringBlockStats::new);
     }
 
+    @GetMapping("/ignoringBlock/{height}/{algo}")
+    public Mono<IgnoringBlockStatsEx> getIgnoringBlockStatsEx(@PathVariable("height") Integer height,
+            @PathVariable("algo") AlgorithmType aType) {
+        return igBlockReactiveRepository.findById(IgnoringBlock.builDBKey(height, aType))
+                .map(IgnoringBlockStatsEx::new);
+    }
+
+    @GetMapping("/ignoringBlocks/{page}/{size}/{algo}")
+    public Flux<IgnoringBlockStats> getIgnoringBlocksby(@PathVariable("page") Integer page,
+            @PathVariable("size") Integer size, @PathVariable("algo") AlgorithmType aType) {
+        return igBlockReactiveRepository.findByAlgorithmUsedOrderByDbKeyDesc(aType, PageRequest.of(page, size))
+                .map(IgnoringBlockStats::new);
+    }
 }

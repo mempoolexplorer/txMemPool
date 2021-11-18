@@ -138,7 +138,7 @@ public class MempoolEventConsumer implements Runnable {
 
     private void checkIfCleanIgnoredTx() {
         if (!lastSync && syncronizedWithUpStream) {
-            log.info("Syncronization with upstream achived... Cleaning ignored Txs that are not in mempool...");
+            log.info("Synchronization with upstream achived... Cleaning ignored Txs that are not in mempool...");
             ignoredEntitiesService.cleanIgTxNotInMempool(txMemPool);
             log.info("Clean complete");
             igTxCacheContainer.calculate();

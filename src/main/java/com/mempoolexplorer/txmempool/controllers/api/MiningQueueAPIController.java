@@ -243,7 +243,9 @@ public class MiningQueueAPIController {
 					pruned.setTxIdSelected(txId);
 					pruned.setTxIndexSelected(txIndex);
 					pruned.setTxDependenciesInfo(buildDependenciesInfo(txId, liveMiningQueue.getMiningQueue()));
-					pruned.setTxIgnoredData(buildTxIgnoredData(txId));
+					pruned.setTxIgnoredDataOurs(buildTxIgnoredData(txId, AlgorithmType.OURS));
+					pruned.setTxIgnoredData(pruned.getTxIgnoredDataOurs());
+					pruned.setTxIgnoredDataBT(buildTxIgnoredData(txId, AlgorithmType.BITCOIND));
 					if (fillTxField) {
 						pruned.setTx(buildTx(txId, liveMiningQueue.getMiningQueue()));
 					}
@@ -259,9 +261,8 @@ public class MiningQueueAPIController {
 		return new InvariantTxParts(txToBeMined.get().getTx());
 	}
 
-	private TxIgnoredData buildTxIgnoredData(String txId) {
-		IgnoredTransaction igTx = igTxReactiveRepository
-				.findById(IgnoredTransaction.buildDBKey(txId, AlgorithmType.OURS)).block();
+	private TxIgnoredData buildTxIgnoredData(String txId, AlgorithmType aType) {
+		IgnoredTransaction igTx = igTxReactiveRepository.findById(IgnoredTransaction.buildDBKey(txId, aType)).block();
 		if (igTx == null) {
 			return new TxIgnoredData();
 		}

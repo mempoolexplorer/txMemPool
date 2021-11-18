@@ -37,7 +37,12 @@ public class PrunedLiveMiningQueueGraphData {
 
 	private TxDependenciesInfo txDependenciesInfo = null;
 
+	// TODO: delete
 	private TxIgnoredData txIgnoredData;
+
+	private TxIgnoredData txIgnoredDataOurs;
+
+	private TxIgnoredData txIgnoredDataBT;
 
 	private InvariantTxParts tx;
 }
