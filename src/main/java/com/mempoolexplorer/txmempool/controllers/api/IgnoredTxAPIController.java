@@ -21,12 +21,6 @@ public class IgnoredTxAPIController {
     @Autowired
     private IgTxCacheContainer igTxCacheContainer;
 
-    //TODO: delete
-    @GetMapping("/ignoredTxs")
-    public List<TxIdTimesIgnored> getIgnoredTxs() {
-        return igTxCacheContainer.getIgTxList(AlgorithmType.OURS);
-    }
-
     @GetMapping("/ignoredTxs/{algo}")
     public List<TxIdTimesIgnored> hasBlock(@PathVariable("algo") AlgorithmType aType) {
         return igTxCacheContainer.getIgTxList(aType);

@@ -244,7 +244,6 @@ public class MiningQueueAPIController {
 					pruned.setTxIndexSelected(txIndex);
 					pruned.setTxDependenciesInfo(buildDependenciesInfo(txId, liveMiningQueue.getMiningQueue()));
 					pruned.setTxIgnoredDataOurs(buildTxIgnoredData(txId, AlgorithmType.OURS));
-					pruned.setTxIgnoredData(pruned.getTxIgnoredDataOurs());
 					pruned.setTxIgnoredDataBT(buildTxIgnoredData(txId, AlgorithmType.BITCOIND));
 					if (fillTxField) {
 						pruned.setTx(buildTx(txId, liveMiningQueue.getMiningQueue()));

@@ -31,20 +31,11 @@ public class MinerStatsAPIController {
     public Flux<MinerStats> getMinersStats() {
         return minerStatisticsRepository.findAll().map(MinerStats::new);
     }
-    
-    //TODO: delete
-    @GetMapping("/ignoringBlocks/{minerName}/{page}/{size}")
-    public Flux<IgnoringBlockStats> getIgnoringBlocks(@PathVariable("minerName") String minerName,
-            @PathVariable("page") Integer page, @PathVariable("size") Integer size) {
-
-        return igBlockReactiveRepository.findByAlgorithmUsedAndMinedBlockDataCoinBaseDataMinerNameOrderByDbKeyDesc(
-                AlgorithmType.OURS, minerName, PageRequest.of(page, size)).map(IgnoringBlockStats::new);
-    }
 
     @GetMapping("/ignoringBlocks/{minerName}/{page}/{size}/{algo}")
     public Flux<IgnoringBlockStats> getIgnoringBlocks(@PathVariable("minerName") String minerName,
-            @PathVariable("page") Integer page, @PathVariable("size") Integer size, @PathVariable("algo") AlgorithmType aType) {
-
+            @PathVariable("page") Integer page, @PathVariable("size") Integer size,
+            @PathVariable("algo") AlgorithmType aType) {
         return igBlockReactiveRepository.findByAlgorithmUsedAndMinedBlockDataCoinBaseDataMinerNameOrderByDbKeyDesc(
                 aType, minerName, PageRequest.of(page, size)).map(IgnoringBlockStats::new);
     }
