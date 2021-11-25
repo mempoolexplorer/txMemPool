@@ -45,10 +45,12 @@ public class IgnoredEntitiesServiceImpl implements IgnoredEntitiesService {
     @Override
     public void onDeleteTx(String txId) {
         // Deletes txId from IgnoredTransactions db.
-        // Changing tx.state & tx.finallyMinedOnBlock and save to historic is not
-        // implemented yet.
+        // Changes tx.state & tx.finallyMinedOnBlock and save to historic in case of
+        // repudiated.
         igTxReactiveRepository.deleteById(IgnoredTransaction.buildDBKey(txId, AlgorithmType.BITCOIND)).block();
         igTxReactiveRepository.deleteById(IgnoredTransaction.buildDBKey(txId, AlgorithmType.OURS)).block();
+        deleteRepudiatedTx(txId, AlgorithmType.BITCOIND);
+        deleteRepudiatedTx(txId, AlgorithmType.BITCOIND);
     }
 
     @Override
@@ -68,14 +70,21 @@ public class IgnoredEntitiesServiceImpl implements IgnoredEntitiesService {
 
         log.info("minedBlockTXIds.size(): {}", minedBlockTxIds.size());
 
-        for (String igTxId : minedBlockTxIds) {
-            igTxReactiveRepository.deleteById(IgnoredTransaction.buildDBKey(igTxId, igBlock.getAlgorithmUsed()))
+        for (String minedTxId : minedBlockTxIds) {
+            igTxReactiveRepository.deleteById(IgnoredTransaction.buildDBKey(minedTxId, igBlock.getAlgorithmUsed()))
                     .block();
+            RepudiatedTransaction repTx = repudiatedTxReactiveRepository
+                    .findById(RepudiatedTransaction.buildDBKey(minedTxId, igBlock.getAlgorithmUsed())).block();
+            if (repTx != null) {
+                repTx.setState(IgnoredTxState.MINED);
+                repTx.setFinallyMinedOnBlock(igBlock.getMinedBlockData().getHeight());
+                repudiatedTxReactiveRepository.save(repTx);
+            }
         }
 
         for (NotMinedTransaction nmTx : ignoredTxs) {
             IgnoredTransaction igTx = igTxReactiveRepository
-            .findById(IgnoredTransaction.buildDBKey(nmTx.getTxId(), igBlock.getAlgorithmUsed())).block();
+                    .findById(IgnoredTransaction.buildDBKey(nmTx.getTxId(), igBlock.getAlgorithmUsed())).block();
             if (igTx == null) {
                 igTx = new IgnoredTransaction();
                 igTx.setTxId(nmTx.getTxId());
@@ -133,6 +142,15 @@ public class IgnoredEntitiesServiceImpl implements IgnoredEntitiesService {
         igTxReactiveRepository
                 .deleteAll(igTxReactiveRepository.findAll().filter(igTx -> !txMemPool.containsTxId(igTx.getTxId())))
                 .block();
+    }
+
+    private void deleteRepudiatedTx(String txId, AlgorithmType algo) {
+        RepudiatedTransaction rTx = repudiatedTxReactiveRepository
+                .findById(RepudiatedTransaction.buildDBKey(txId, algo)).block();
+        if (rTx != null) {
+            rTx.setState(IgnoredTxState.DELETED);
+            repudiatedTxReactiveRepository.save(rTx);
+        }
     }
 
     private boolean isAlreadyModifiedForThisBlock(IgnoredTransaction igTx, IgnoringBlock igBlock) {
