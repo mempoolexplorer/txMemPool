@@ -25,6 +25,6 @@ public class RepudiatedTxAPIController {
     @GetMapping("/repudiatedTxs/{page}/{size}/{algo}")
     public Flux<RepudiatedTransaction> getIgnoringBlocksby(@PathVariable("page") Integer page,
             @PathVariable("size") Integer size, @PathVariable("algo") AlgorithmType aType) {
-        return repudiatedTxReactiveRepository.findByaTypeOrderByDbKeyDesc(aType, PageRequest.of(page, size));
+        return repudiatedTxReactiveRepository.findByaTypeOrderByTimeWhenShouldHaveBeenMinedDesc(aType, PageRequest.of(page, size));
     }
 }

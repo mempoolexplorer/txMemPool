@@ -144,12 +144,21 @@ public class IgnoredEntitiesServiceImpl implements IgnoredEntitiesService {
                 .block();
     }
 
+    @Override
+    public void markRepudiatedTxNotInMemPool(TxMemPool txMemPool) {
+        repudiatedTxReactiveRepository.saveAll(repudiatedTxReactiveRepository.findByState(IgnoredTxState.INMEMPOOL)
+                .filter(rTx -> !txMemPool.containsTxId(rTx.getTxId())).map(rTx -> {
+                    rTx.setState(IgnoredTxState.ERROR);
+                    return rTx;
+                })).collectList().block();
+    }
+
     private void deleteRepudiatedTx(String txId, AlgorithmType algo) {
         RepudiatedTransaction rTx = repudiatedTxReactiveRepository
                 .findById(RepudiatedTransaction.buildDBKey(txId, algo)).block();
         if (rTx != null) {
             rTx.setState(IgnoredTxState.DELETED);
-            repudiatedTxReactiveRepository.save(rTx);
+            repudiatedTxReactiveRepository.save(rTx).block();
         }
     }
 

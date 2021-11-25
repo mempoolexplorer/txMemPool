@@ -1,5 +1,5 @@
 package com.mempoolexplorer.txmempool.entites;
 
 public enum IgnoredTxState {
-	INMEMPOOL, MINED, DELETED
+	INMEMPOOL, MINED, DELETED, ERROR
 }

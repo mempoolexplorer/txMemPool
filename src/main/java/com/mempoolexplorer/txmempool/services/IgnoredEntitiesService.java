@@ -21,4 +21,5 @@ public interface IgnoredEntitiesService {
 
         public void onRecalculateBlockFromRecorder(IgnoringBlock igBlock);
 
+        public void markRepudiatedTxNotInMemPool(TxMemPool txMemPool);
 }
