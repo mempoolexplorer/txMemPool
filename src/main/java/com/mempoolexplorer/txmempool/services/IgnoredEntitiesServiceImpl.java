@@ -78,7 +78,7 @@ public class IgnoredEntitiesServiceImpl implements IgnoredEntitiesService {
             if (repTx != null) {
                 repTx.setState(IgnoredTxState.MINED);
                 repTx.setFinallyMinedOnBlock(igBlock.getMinedBlockData().getHeight());
-                repudiatedTxReactiveRepository.save(repTx);
+                repudiatedTxReactiveRepository.save(repTx).block();
             }
         }
 
