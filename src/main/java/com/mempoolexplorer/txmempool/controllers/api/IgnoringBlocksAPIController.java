@@ -25,6 +25,13 @@ public class IgnoringBlocksAPIController {
         @Autowired
         private IgBlockReactiveRepository igBlockReactiveRepository;
 
+        @GetMapping("/lastIgnoringBlock/{algo}")
+        public Mono<IgnoringBlockStatsEx> getIgnoringBlockStatsEx(
+                        @PathVariable("algo") AlgorithmType aType) {
+                return igBlockReactiveRepository.findByAlgorithmUsedOrderByDbKeyDesc(aType, PageRequest.of(0, 1))
+                                .map(IgnoringBlockStatsEx::new).next();
+        }
+
         @GetMapping("/ignoringBlock/{height}/{algo}")
         public Mono<IgnoringBlockStatsEx> getIgnoringBlockStatsEx(@PathVariable("height") Integer height,
                         @PathVariable("algo") AlgorithmType aType) {
