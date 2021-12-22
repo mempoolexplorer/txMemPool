@@ -23,7 +23,7 @@ public class IgTxCacheContainerImpl implements IgTxCacheContainer {
     @Autowired
     private TxMemPool txMemPool;
 
-    private List<TxIdTimesIgnored> igTxListOurs = new ArrayList<>();// Our ideal algorithm
+    private List<TxIdTimesIgnored> igTxListOurs = new ArrayList<>();// Our onBlockArrival algorithm
     private List<TxIdTimesIgnored> igTxListBT = new ArrayList<>();// Bitcoind block template
 
     @Override
