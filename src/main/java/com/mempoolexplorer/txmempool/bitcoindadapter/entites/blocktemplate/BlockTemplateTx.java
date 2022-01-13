@@ -2,12 +2,16 @@ package com.mempoolexplorer.txmempool.bitcoindadapter.entites.blocktemplate;
 
 import com.mempoolexplorer.txmempool.entites.Feeable;
 
+import lombok.ToString;
+
+@ToString
 public class BlockTemplateTx implements Feeable {
 
 	private String txId;
 	private long fee;
 	private int sigops;
 	private int weight;
+	private int index;
 
 	public BlockTemplateTx() {
 	}
@@ -65,24 +69,16 @@ public class BlockTemplateTx implements Feeable {
 		this.sigops = sigops;
 	}
 
-
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("BlockTemplateTx [txId=");
-		builder.append(txId);
-		builder.append(", fee=");
-		builder.append(fee);
-		builder.append(", sigops=");
-		builder.append(sigops);
-		builder.append(", weight=");
-		builder.append(weight);
-		builder.append("]");
-		return builder.toString();
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

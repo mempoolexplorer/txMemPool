@@ -32,7 +32,7 @@ public class MisMinedTransactions {
 
 	private CandidateBlockData candidateBlockData;
 
-	// minedAndInMemPoolMapWD 
+	// minedAndInMemPoolMapWD
 	// In our mempool, in mined Block, indiferent if is in candidate block or not.
 	private FeeableMapWithData<Transaction> relayedToUsMapWD = new FeeableMapWithData<>(
 			SysProps.HM_INITIAL_CAPACITY_FOR_BLOCK);
@@ -41,32 +41,34 @@ public class MisMinedTransactions {
 	private FeeableMapWithData<Transaction> inCommonMapWD = new FeeableMapWithData<>(
 			SysProps.HM_INITIAL_CAPACITY_FOR_BLOCK);
 
-	// notMinedButInCandidateBlockMapWD 
-	// In our mempool, not in mined block, in candidate block. ignored or not received by miner.
+	// notMinedButInCandidateBlockMapWD
+	// In our mempool, not in mined block, in candidate block. ignored or not
+	// received by miner.
 	private FeeableMapWithData<NotMinedTransaction> ignoredONRByMinerMapWD = new FeeableMapWithData<>(
 			SysProps.HM_INITIAL_CAPACITY_FOR_EXPECTED_MISMINED);
 
-	// notMinedButInCandidateBlockMPTStatistics 
+	// notMinedButInCandidateBlockMPTStatistics
 	// Statistics about the time since ignoredOrNotReceivedByMinerMapWD txs entered
 	// in mempool.
 	// This is helpful to find miners with connectivity issues (as the great
 	// firewall of China).
 	private TimeSinceEnteredStatistics ignoredONRByMinerStatistics;
 
-	// minedInMempoolButNotInCandidateBlockMapWD 
-	// In our mempool, in mined block, not in candidate Block. 
+	// minedInMempoolButNotInCandidateBlockMapWD
+	// In our mempool, in mined block, not in candidate Block.
 	private FeeableMapWithData<Transaction> ignoredByUsMapWD = new FeeableMapWithData<>(
 			SysProps.HM_INITIAL_CAPACITY_FOR_EXPECTED_MISMINED);
 
-	// minedButNotInMemPoolSet 
-	// Not in our mempool, in mined block, not in candidate block. (Only for check mempool coherence)
+	// minedButNotInMemPoolSet
+	// Not in our mempool, in mined block, not in candidate block. (Only for check
+	// mempool coherence)
 	private Set<String> notRelayedToUsSet = new HashSet<>(SysProps.HM_INITIAL_CAPACITY_FOR_EXPECTED_MISMINED);
 
 	// minedButNotInMemPoolMapWD
 	private FeeableMapWithData<NotInMemPoolTx> notRelayedToUsMapWD = new FeeableMapWithData<>(
 			SysProps.HM_INITIAL_CAPACITY_FOR_EXPECTED_MISMINED);
 
-	// inCandidateBlockButNotInMemPool 
+	// inCandidateBlockButNotInMemPool
 	// Only in the case of ALGORITHM_BITCOID, blockTemplate has some tx that are not
 	// in mempool due to race conditions
 	private Set<String> raceConditionTxsSet = new HashSet<>();
@@ -178,7 +180,7 @@ public class MisMinedTransactions {
 				Transaction tx = opTx.get();
 				feeableData.checkFeeable(tx);
 				if (!relayedToUsMapWD.containsKey(tx.getTxId())) {
-					ignoredONRByMinerMapWD.put(new NotMinedTransaction(tx, Optional.empty()));
+					ignoredONRByMinerMapWD.put(new NotMinedTransaction(tx, Optional.of(e.getValue().getIndex())));
 				}
 
 				cbd.setNumTxs(cbd.getNumTxs() + 1);
