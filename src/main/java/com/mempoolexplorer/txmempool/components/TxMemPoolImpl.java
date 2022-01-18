@@ -186,16 +186,16 @@ public class TxMemPoolImpl implements TxMemPool {
 		// Carefull with null values in case of unrecognized scripts
 		if (tx.getTxInputs() != null) {
 			tx.getTxInputs().stream().forEach(txIn -> {
-				if (txIn.getAddressIds() != null) {
-					txIn.getAddressIds().stream().forEach(retSet::add);
+				if (txIn.getAddress() != null) {
+					retSet.add(txIn.getAddress());
 				}
 			});
 		}
 		// Carefull with null values in case of unrecognized scripts
 		if (tx.getTxOutputs() != null) {
 			tx.getTxOutputs().stream().forEach(txOut -> {
-				if (txOut.getAddressIds() != null) {
-					txOut.getAddressIds().stream().forEach(retSet::add);
+				if (txOut.getAddress() != null) {
+					retSet.add(txOut.getAddress());
 				}
 			});
 		}

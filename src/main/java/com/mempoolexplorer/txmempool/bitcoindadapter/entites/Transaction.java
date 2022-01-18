@@ -47,23 +47,11 @@ public class Transaction implements Feeable {
 
 	public boolean isNonStandard() {
 		for (TxOutput txo : txOutputs) {
-			if (txo.getAddressIds() == null || txo.getAddressIds().isEmpty()) {
+			if (txo.getAddress() == null) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Returns all addresses involved in this transaction, address in inputs,
-	 * outputs and duplicated.
-	 * 
-	 */
-	public List<String> listAddresses() {
-		List<String> txInputsAddresses = txInputs.stream().map(TxInput::getAddressIds).flatMap(List::stream)
-				.collect(Collectors.toList());
-		return txOutputs.stream().map(TxOutput::getAddressIds).flatMap(List::stream)
-				.collect(Collectors.toCollection(() -> txInputsAddresses));
 	}
 
 	@Override
