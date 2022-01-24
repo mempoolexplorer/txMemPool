@@ -25,11 +25,11 @@ public class MinerNameResolverImpl implements MinerNameResolver {
 		// Order is important (i.e. "E2M & BTC.TOP" vs "BTC.TOP")
 		minerNames = List
 				.of("AntPool", "BTC.com", "Huobi", "HuoBi", "poolin.com", "Bitfury", "E2M & BTC.TOP", "slush",
-						"bytepool.com", "BTC.TOP", "1THash&58COIN", "www.okex.com", "NovaBlock", "ViaBTC",
+						"bytepool.com", "BTC.TOP", "1THash&58COIN", "1THash", "www.okex.com", "NovaBlock", "ViaBTC",
 						"Ukrpool.com", "SpiderPool", "TTTTTT3333", "taal.com", "bitcoin.com", "MiningCity", "ckpool",
 						"CN/TT", "MrMike", "lubian.com", "Bitdeer", "Binance", "Foundry USA Pool", "SBICrypto.com Pool",
 						"www.okex.com", "Powered by Luxor Tech", "ckpool.org", "MARA Pool", "xxxxxx.com", "btcpool", "KuCoinPool",
-						"ultimus", "Sigmapool.com")
+						"ultimus", "Sigmapool.com", "terrapool.io")
 				.stream().map(String::toLowerCase).collect(Collectors.toList());
 	}
 
