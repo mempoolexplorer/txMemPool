@@ -29,7 +29,7 @@ public class MinerNameResolverImpl implements MinerNameResolver {
 						"Ukrpool.com", "SpiderPool", "TTTTTT3333", "taal.com", "bitcoin.com", "MiningCity", "ckpool",
 						"CN/TT", "MrMike", "lubian.com", "Bitdeer", "Binance", "Foundry USA Pool", "SBICrypto.com Pool",
 						"www.okex.com", "Powered by Luxor Tech", "ckpool.org", "MARA Pool", "xxxxxx.com", "btcpool", "KuCoinPool",
-						"ultimus", "Sigmapool.com", "terrapool.io")
+						"ultimus", "Sigmapool.com", "terrapool.io", "Titan.io", "okkong.com")
 				.stream().map(String::toLowerCase).collect(Collectors.toList());
 	}
 
